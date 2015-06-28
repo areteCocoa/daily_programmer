@@ -10,13 +10,7 @@
     Player Two - Black - 2
 */
 
-#![feature(core)]
-
-extern crate core;
-
 pub mod go {
-    use core::str::FromStr;
-
     /*
         a vector of the pieces. 0 is no player, 1 is p1, 2 is p2
     */
@@ -34,6 +28,18 @@ pub mod go {
     pub struct Point {
         x: usize,
         y: usize,
+    }
+
+    enum Direction {
+        Left,
+        Up,
+        Right,
+        Down,
+    }
+
+    /// Returns a vector of all directions
+    fn all_directions() -> Vec<Direction> {
+        vec![Direction::Left, Direction::Up, Direction::Right, Direction::Down]
     }
 
     impl GameBoard {
@@ -67,14 +73,14 @@ pub mod go {
             let mut input_lines: Vec<&str> = input.split('\n').collect();
             let size_input: &str = input_lines.remove(0);
             let size_strings: Vec<&str> = size_input.split(' ').collect();
-            let width = match u8::from_str(size_strings[0]) {
+            let width = match size_strings[0].parse::<u8>() {
                 Ok(x) => x,
                 Err(e) => {
                     println!("Error parsing width: {}.", e);
                     0
                 }
             };
-            let height = match u8::from_str(size_strings[1]) {
+            let height = match size_strings[1].parse::<u8>() {
                 Ok(x) => x,
                 Err(e) => {
                     println!("Error parsing height: {}.", e);
@@ -97,7 +103,7 @@ pub mod go {
                     input_chars.push('a'); // blank character, gets converted to 0
                 }
                 for x in 0..game_board.size.width {
-                    game_board.board[x][y] = (GameBoard::number_for_char(input_chars[x]));
+                    game_board.board[x][y] = GameBoard::number_for_char(input_chars[x]);
                 }
             }
 
@@ -126,10 +132,107 @@ pub mod go {
             Returns the number of tiles removed with tile placement
             at Point point for current_player.
         */
-        pub fn tiles_removed_with_play(&self, point: &Point) -> u8 {
+        fn tiles_removed_with_play(&self, point: &Point) -> u8 {
+            // If is already taken, won't remove any tiles (invalid play)
+            if self.board[point.x][point.y] != 0 {
+                return 0;
+            }
+
+
+            // See if tiles inside can be removed
+            // Return number of tiles that can be removed
+
             0
         }
 
+        /// Returns a vector of all the tiles in the group
+        fn group_for_tile(&self, point: &Point) -> Vec<Point> {
+            let mut tiles = Vec::<Point>::new();
+
+            tiles
+        }
+
+        /// Returns a vector of tiles that validate a group.
+        pub fn blank_tiles_around_tile_group(&self, point: &Point) -> Vec<Point> {
+            let mut blanks = Vec::<Point>::new();
+
+            let blank_directions = self.neighbors(0, point, None);
+            let blank_points = self.points_from_directions(point, blank_directions);
+
+            blanks
+        }
+
+        /// Return a vector of points from tiles in directions from point.
+        fn points_from_directions(&self, point: &Point, directions: Vec<Direction>) -> Vec<Point> {
+            let mut points = Vec::<Point>::new();
+
+            for d in directions {
+                points.push(self.point_from_direction(point, d));
+            }
+
+            points
+        }
+
+        /// Returns a point for a direction from another point
+        fn point_from_direction(&self, point: &Point, direction: Direction) -> Point {
+            match direction {
+                Direction::Left => Point::new(point.x-1, point.y),
+                Direction::Up => Point::new(point.x, point.y-1),
+                Direction::Right => Point::new(point.x+1, point.y),
+                Direction::Down => Point::new(point.x, point.y+1),
+            }
+        }
+
+        /// Finds a tile's neighbors
+        fn neighbors(&self, color: u8, point: &Point, exclude: Option<Direction>) -> Vec<Direction> {
+            let mut neighbors = Vec::<Direction>::new();
+            let directions = all_directions();
+            for d in directions {
+                match self.get_tile_at_direction(point, &d) {
+                    Some(x) => {
+                        if x == color {
+                            neighbors.push(d);
+                        }
+                    },
+                    None => {},
+                };
+            }
+
+            neighbors
+        }
+
+        fn get_tile_at_direction(&self, point: &Point, direction: &Direction) -> Option<u8> {
+            let tile = match *direction {
+                Direction::Left => {
+                    if point.x > 0 {
+                        return Some(self.board[point.x-1][point.y]);
+                    }
+                    None
+                },
+                Direction::Up => {
+                    if point.y > 0 {
+                        return Some(self.board[point.x][point.y-1]);
+                    }
+                    None
+                },
+                Direction::Right => {
+                    if point.x < self.size.width {
+                        return Some(self.board[point.x+1][point.y]);
+                    }
+                    None
+                },
+                Direction::Down => {
+                    if point.y < self.size.height {
+                        return Some(self.board[point.x][point.y+1]);
+                    }
+                    None
+                },
+            };
+
+            tile
+        }
+
+        /// Prints board vector as u8s
         pub fn print_raw(&self) {
             println!("=== BOARD ===");
             for row in 0..self.size.height {
@@ -141,6 +244,7 @@ pub mod go {
             println!("");
         }
 
+        /// Prints board vector as readable b's, w's and *'s.
         pub fn print(&self) {
             println!("=== BOARD ===");
             for row in 0..self.size.height {
@@ -172,6 +276,10 @@ pub mod go {
     }
 
     impl Point {
+        pub fn new(x: usize, y: usize) -> Point {
+            Point {x: x, y: y}
+        }
+
         pub fn print(&self) {
             print!("({}, {})", self.x, self.y);
         }

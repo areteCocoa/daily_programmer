@@ -3,15 +3,7 @@
 // Input a list of directions for a canvas with colored papers and calculates the area of each color
 // lib.rs
 
-#![crate_type = "lib"]
-#![crate_name = "pile_of_paper"]
-
-#![feature(core)]
-extern crate core;
-
 pub mod canvas {
-    use core::str::FromStr;
-
     // The whole canvas
     pub struct Canvas {
         width: usize,
@@ -59,17 +51,17 @@ pub mod canvas {
 
             // First line is dimensions
             let dimensions: Vec<&str> = input[0].split(' ').collect();
-            let width = match usize::from_str(dimensions[0]) {
+            let width = match dimensions[0].parse::<usize>() {
                 Ok(x) => x,
                 Err(e) => {
-                    println!("error parsing width: {}", e);
+                    println!("Error: {}", e);
                     0
-                }
+                },
             };
-            let height = match usize::from_str(dimensions[1]) {
+            let height = match dimensions[1].parse::<usize>() {
                 Ok(x) => x,
                 Err(e) => {
-                    println!("error parsing height: {}", e);
+                    println!("Error: {}", e);
                     0
                 }
             };
@@ -133,35 +125,35 @@ pub mod canvas {
             if line.len() != 5 {
                 panic!("Expected 5 inputs, received {}.", line.len());
             } else {
-                let color = match usize::from_str(line[0]) {
+                let color = match line[0].parse::<usize>() {
                     Ok(x) => x,
                     Err(e) => {
                         println!("error parsing color: {}.", e);
                         0
                     }
                 };
-                let x = match usize::from_str(line[1]) {
+                let x = match line[1].parse::<usize>() {
                     Ok(x) => x,
                     Err(e) => {
                         println!("error parsing x: {}.", e);
                         0
                     }
                 };
-                let y = match usize::from_str(line[2]) {
+                let y = match line[2].parse::<usize>() {
                     Ok(x) => x,
                     Err(e) => {
                         println!("error parsing y: {}.", e);
                         0
                     }
                 };
-                let w = match usize::from_str(line[3]) {
+                let w = match line[3].parse::<usize>() {
                     Ok(x) => x,
                     Err(e) => {
                         println!("error parsing width: {}.", e);
                         0
                     }
                 };
-                let h = match usize::from_str(line[4]) {
+                let h = match line[4].parse::<usize>() {
                     Ok(x) => x,
                     Err(e) => {
                         println!("error parsing height: {}.", e);

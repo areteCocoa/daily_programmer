@@ -17,3 +17,4 @@ June
 - [2015-06-15] Challenge #218 [Easy] To-do list (Part 1)
 - [2015-06-17] Challenge #219 [Medium] To-do list (Part 2)
 - [2015-06-22] Challenge #220 [Easy] Mangling sentences
+- [2015-06-24] Challenge #220 [Medium] It's Go time! [Incomplete]
