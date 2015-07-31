@@ -22,3 +22,6 @@ June
 
 ## Ruby
 None to date.
+
+July
+- [2015-07-20] Challenge #224 [Easy] Shuffling a List
